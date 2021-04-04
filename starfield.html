@@ -59,13 +59,9 @@
 
     const stars = [];
 
-    for (let i = 0; i<10; i++) {
-      // Stars need some defaults
-      stars.push({
-        radius: 0.5+Math.random()*2,
-        x: -100,
-        y: -100,
-      });
+    for (let i = 0; i<30; i++) {
+      // Create stars, but force immediate resets
+      stars.push({ x: -100 });
     };
 
     let killer = 1336; // No infinite loops
@@ -74,28 +70,31 @@
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((star) => {
+        // Reset star?
         if (star.x < 0 
             || star.y < 0
             || star.x > canvas.width+2
-            || star.y > canvas.height+2) 
+            || star.y > canvas.height+2)
         {
           star.speed = Math.random();
+          star.radius = Math.random()+0.2;
           star.deltax = Math.random()*2 - 1;
           star.deltay = Math.random()*2 - 1;
           star.x = centerX;
           star.y = centerY;
-          star.color = 'white';
+          // my starfield is rainbowy, what of it?
+          star.color = 'hsl('+killer+', 100%, 80%)';
           if (killer % 10 === 0) {
             star.color = "#e22";
-          } else 
-          if (killer % 31 === 0) {
+          } else if (killer % 31 === 0) {
             star.color = "#22e";
           } 
         }
 
         star.x += star.deltax * star.speed;
         star.y += star.deltay * star.speed;
-        star.speed *= 1.03;
+        star.speed *= 1.05;
+        star.radius *= 1.01;
 
         ctx.fillStyle = star.color;
         ctx.beginPath();
@@ -105,28 +104,23 @@
       });
 
       if (killer > 0) {
-          requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
       }
       killer--;
       document.querySelector('#counter').innerHTML = killer;
     };
     animate();
 
-
     const btn = document.querySelector('#stahp');
 
-    let handler;
-    handler = () => {
-      console.log("yo");
+    btn.addEventListener('click', () => {
       if (killer > 0) {
         killer = 0;
       } else {
         killer = 1337;
         animate();
       }
-    };
-
-    btn.addEventListener('click', handler);
+    });
   </script>
 </body>
 </html>
