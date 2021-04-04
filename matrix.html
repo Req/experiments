@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pretty pretty Matrix</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    #target {
+      background: black;
+      height: 100vh;
+      width: 100vw;
+      z-index: -1;
+      position: fixed;
+    }
+
+    button {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      box-shadow: 0 0 5px 2px #0f0;
+      color: #0f0;
+      margin: 1em;
+      padding: 0.3em;
+      cursor: pointer;
+    }
+
+    #counter {
+      cursor: all-scroll;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="target"></canvas>
+  <div id="wrapper">
+    <button id="stahp">That one button</button>
+    <button id="counter"></button>
+  </div>
+
+  <script type="text/javascript">
+    // Are you KIDDING me with this type casting?
+
+    /** @type {HTMLCanvasElement} */
+    const canvas = document.querySelector('#target');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    /** @type {CanvasRenderingContext2d} */
+    const ctx = canvas.getContext('2d');
+
+
+    const set = "Potatotomato";
+    let pointer = -1;
+    const getChar = () => {
+      pointer++;
+      if (pointer >= set.length) {
+        pointer = 0;
+      }
+      return set[pointer];
+    }
+
+    const drawChar = (color, x, y, char, maxWidth) => {
+      ctx.fillStyle = color;
+      ctx.fillText(char, x, y, maxWidth);
+    };
+
+    class Worm {
+      constructor(x) {
+        this.x = x;
+        this.init(Math.random());
+      }
+
+      // This reuses random just as a micro-optimization
+      init(random) {
+        this.y = Math.ceil(random * canvas.height) - 100;
+        this.fontSize = 3 + Math.ceil(random * 45);
+        this.chars = [];
+
+        const charCount = 2+Math.ceil(random*10);
+        for (let i = 0; i < charCount; i++) {
+          this.chars.push(getChar());
+        }
+      }
+
+      drawChars() {
+        ctx.font = this.fontSize + 'px monospace'; // default 10px sans-serif
+        ctx.beginPath();
+        const random = Math.random();
+        let y = this.y += this.fontSize;
+        if (y > window.innerHeight+500) {
+          this.init(random);
+          this.y = -400;
+          y = this.y;
+        }
+        this.chars.forEach((char, i) => {
+          let localY = y + this.fontSize*i;
+          if (i === 0) {
+            drawChar('#002200', this.x, localY, char, this.fontSize);
+          }
+          else if (i === 1) {
+            drawChar('#005500', this.x, localY, char, this.fontSize);
+          }
+          else if (i === this.chars.length-1) {
+            drawChar('#99FF99', this.x, localY, char, this.fontSize);
+          }
+          else {
+            drawChar('#00CC00', this.x, localY, char, this.fontSize);
+          }
+        });
+        this.chars = this.chars.slice(1);
+        this.chars.push(getChar());
+      }
+    };
+
+    // setup lanes
+    const laneSpacing = canvas.width / 10;
+    const halfLaneSpacing = laneSpacing / 2
+    const lanes = [];
+    for (let i = 0; i < 10; i++) {
+      const x = (laneSpacing * i) + halfLaneSpacing;
+      lanes.push({ worm: new Worm(x) });
+    }
+
+    let killer = 300; // I dont like true infinite loops
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      lanes.forEach((lane) => {
+        lane.worm.drawChars();
+      });
+      if (killer > 0) {
+        setTimeout(() => {
+          requestAnimationFrame(animate);
+        }, 50);
+      }
+      killer--;
+      document.querySelector('#counter').innerHTML = killer;
+    };
+    animate();
+
+    const btn = document.querySelector('#stahp');
+
+    let handler;
+    handler = () => {
+      console.log("yo");
+      if (killer > 0) {
+        killer = 0;
+      } else {
+        killer = 300;
+        animate();
+      }
+    };
+
+    btn.addEventListener('click', handler);
+
+</script>
+</body>
+</html>
