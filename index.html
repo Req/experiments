@@ -1,82 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      body {
+        background: #222;
+      }
+      #wrapper {
+        border-radius: 5px;
+        padding: 0.5em;
+        background: #f0f0f0;
+      }
+      iframe {
+        border-radius: 5px;
+        width: 100%;
+        height: 60vh;
+      }
+      nav {
+        padding: 1em;
+        display: flex;
+        gap: 1em;
+        flex-wrap: wrap;
+        flex-basis: 15em;
+      }
+      nav > button {
+        background-color: #f0f0f0;
+        border: 1px solid;
+        border-radius: 5px;
+        flex-grow: 1;
+      }
+      nav > button.clicked {
+        background:linear-gradient(to bottom right, hotpink, lightblue);
+        border-style: double;
+        border-color: hotpink;
+      }
+    </style>
+    <script type="text/javascript">
+      const init = () => {
+        const iframe = document.querySelector('iframe');
+        document.querySelector('body').addEventListener('click', (e) => {
+          if (e.target && e.target.nodeName.toLowerCase() === "button") {
+            const old = document.querySelector('.clicked');
+            iframe.src = e.target.dataset.target;
+            old && old.classList.remove('clicked');
+            e.target.classList.add('clicked');
+          }
+        });
+      };
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pretty pretty flowers</title>
-</head>
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  #target {
-    background: #fcc;
-    width: 100vw;
-    height: 100vh;
-  }
-</style>
-
-<body>
-  <canvas id="target"></canvas>
-
-  <script type="text/javascript">
-    // fibo
-    let prev = 1, prevprev = 0;
-    const nextFibo = () => {
-      const cur = prev + prevprev;
-      prevprev = prev;
-      prev = cur;
-      return cur;
-    }
-
-    // canvas setup
-    const canvas = document.getElementById("target");
-    const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = 'black';
-    // ctx.globalCompositeOperation = 'destination-over';
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let centerX = Math.ceil(canvas.width / 2);
-    let centerY = Math.ceil(canvas.height / 2);
-    let limiter = 0;
-
-    const drawCircle = () => {
-      // Loop counter && infinity killer
-      limiter++;
-      let angle = limiter * 2.99; // edit multiplier for differen flower
-
-      // Distance from origo
-      let distance = 5 * Math.sqrt(angle);
-
-      // 250,250 = centerpoint
-      let x = centerX + distance * Math.sin(angle);
-      let y = centerY + distance * Math.cos(angle);
-
-      // ctx.clearRect(0,0,canvas.width, canvas.height);
-      ctx.fillStyle = 'hsl(' + distance * 8 + ', 100%, 50%)';
-      ctx.beginPath();
-      ctx.arc(x, y, 20, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    }
-
-    const animate = () => {
-      if (limiter > 1337) { return; }
-
-      drawCircle();
-      requestAnimationFrame(animate);
-    };
-    animate();
-  </script>
-</body>
-
+      window.addEventListener('DOMContentLoaded', init);
+    </script>
+  </head>
+  <body>
+    <nav>
+      <button data-target="bounce.html" class="clicked">Bounce</button>
+      <button data-target="flowers.html">Flowers</button>
+      <button data-target="matrix.html">Matrix</button>
+      <button data-target="move.html">Move</button>
+      <button data-target="draw.html">Draw</button>
+      <button data-target="starfield.html">Starfield</button>
+    </nav>
+    <div id="wrapper">
+      <iframe src="bounce.html" frameborder="0"></iframe>
+    </div>
+  </body>
 </html>

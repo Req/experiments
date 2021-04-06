@@ -29,6 +29,7 @@
       margin: 1em;
       padding: 0.3em;
       cursor: pointer;
+      text-align: left;
     }
     #counter {
       cursor: all-scroll;
@@ -54,13 +55,13 @@
 
     /** @type {CanvasRenderingContext2d} */
     const ctx = canvas.getContext('2d');
-    const centerX = Math.ceil(canvas.width/2);
-    const centerY = Math.ceil(canvas.height/2);
 
     let killer = 2000; // No infinite loops
-    let x = centerX;
-    let y = centerY;
-    let dx = 2, dy = 2, radius = 20, l = 0, dl = 1;
+    let x =  Math.ceil(Math.random()*canvas.width);
+    let y =  Math.ceil(Math.random()*canvas.height);
+    let dx = Math.ceil(Math.random()*10-5);
+    let dy = Math.ceil(Math.random()*10-5);
+    let radius = 20;
     const animate = () => {
       // ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -68,25 +69,25 @@
       y += dy;
 
       if (x<radius) {
+        x = radius+1;
         dx *= -1;
         // killer += 140;
       } else if (x>canvas.width-radius) {
+        x = canvas.width-radius-1;
         dx *= -1;
         // killer -= 140;
       }
       if (y<radius) {
+        y = radius+1;
         dy *= -1;
         // killer += 140;
       } else if (y>canvas.height-radius) {
+        y = canvas.height-radius-1;
         dy *= -1;
         // killer -= 140;
       }
 
-      if (l < 50) {
-        l += 1;
-      }
-
-      ctx.fillStyle = 'hsl(' + killer + ', 100%, '+l+'%)';
+      ctx.fillStyle = 'hsl(' + killer + ', 100%, 50%)';
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
       ctx.closePath();
@@ -97,19 +98,18 @@
       }
 
       killer--;
-      document.querySelector('#counter').innerHTML = killer;
+      document.querySelector('#counter').innerHTML = `${killer}<br/>x: ${x.toFixed(2)}<br/>dx: ${dx.toFixed(2)}<br/>y: ${y.toFixed(2)}<br/>dy: ${dy.toFixed(2)}`;
     };
     animate();
 
     const btn = document.querySelector('#stahp');
 
     btn.addEventListener('click', () => {
-      if (killer > 0) {
-        killer = 0;
-      } else {
-        killer = 2000;
-        animate();
-      }
+      killer = 2000;
+      x = Math.random()*canvas.width;
+      y = Math.random()*canvas.height;
+      dx = Math.random()*10-5;
+      dy = Math.random()*10-5;
     });
 
     const b = document.querySelector('body');
