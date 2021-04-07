@@ -1,129 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pretty pretty starfield</title>
-<style>
 
-* {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    #target {
-      background: black;
-      height: 100vh;
-      width: 100vw;
-      z-index: -1;
-      position: fixed;
-    }
-    button {
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 5px;
-      box-shadow: 0 0 5px 2px #0f0;
-      color: #0f0;
-      margin: 1em;
-      padding: 0.3em;
-      cursor: pointer;
-      text-align: left;
-    }
-    #counter {
-      cursor: all-scroll;
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-</style>
-</head>
-<body>
-  <canvas id="target"></canvas>
-  <div id="wrapper">
-    <button id="stahp">That one button</button>
-    <button id="counter"></button>
-  </div>
-  <script type="text/javascript">
-    // Are you KIDDING me with this type casting?
-
-    /** @type {HTMLCanvasElement} */
-    const canvas = document.querySelector('#target');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    /** @type {CanvasRenderingContext2d} */
-    const ctx = canvas.getContext('2d');
-
-    let killer = 2000; // No infinite loops
-    let x =  Math.ceil(Math.random()*canvas.width);
-    let y =  Math.ceil(Math.random()*canvas.height);
-    let dx = Math.ceil(Math.random()*10-5);
-    let dy = Math.ceil(Math.random()*10-5);
-    let radius = 20;
-    const animate = () => {
-      // ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      x += dx;
-      y += dy;
-
-      if (x<radius) {
-        x = radius+1;
-        dx *= -1;
-        // killer += 140;
-      } else if (x>canvas.width-radius) {
-        x = canvas.width-radius-1;
-        dx *= -1;
-        // killer -= 140;
-      }
-      if (y<radius) {
-        y = radius+1;
-        dy *= -1;
-        // killer += 140;
-      } else if (y>canvas.height-radius) {
-        y = canvas.height-radius-1;
-        dy *= -1;
-        // killer -= 140;
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretty pretty starfield</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      ctx.fillStyle = 'hsl(' + killer + ', 100%, 50%)';
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.fill();
-
-      if (killer > 0) {
-        requestAnimationFrame(animate);
+      #target {
+        background: black;
+        height: 100vh;
+        width: 100vw;
+        z-index: -1;
+        position: fixed;
       }
 
-      killer--;
-      document.querySelector('#counter').innerHTML = `${killer}<br/>x: ${x.toFixed(2)}<br/>dx: ${dx.toFixed(2)}<br/>y: ${y.toFixed(2)}<br/>dy: ${dy.toFixed(2)}`;
-    };
-    animate();
+      button {
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        box-shadow: 0 0 5px 2px #0f0;
+        color: #0f0;
+        margin: 1em;
+        padding: 0.3em;
+        cursor: pointer;
+        text-align: left;
+      }
 
-    const btn = document.querySelector('#stahp');
+      #counter {
+        cursor: all-scroll;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+    </style>
+  </head>
 
-    btn.addEventListener('click', () => {
-      killer = 2000;
-      x = Math.random()*canvas.width;
-      y = Math.random()*canvas.height;
-      dx = Math.random()*10-5;
-      dy = Math.random()*10-5;
-    });
+  <body>
+    <canvas id="target"></canvas>
+    <div id="wrapper">
+      <button id="stahp">That one button</button>
+      <button id="counter"></button>
+    </div>
+    <script type="text/javascript">
+      // Are you KIDDING me with this type casting?
 
-    const b = document.querySelector('body');
+      /** @type {HTMLCanvasElement} */
+      const canvas = document.querySelector('#target');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-    b.addEventListener('keydown', (e) => {
-      console.log(e.key);
-      if (e.key === "ArrowRight") { dx = 3; }
-      if (e.key === "ArrowLeft") { dx = -3; }
-      if (e.key === "ArrowUp") { dy = -3; }
-      if (e.key === "ArrowDown") { dy = 3; }
-    });
-    b.addEventListener('onkeyup', () => {
-      dx = 2, dy = 2;
-    });
-  </script>
-</body>
+      /** @type {CanvasRenderingContext2d} */
+      const ctx = canvas.getContext('2d');
+
+      let killer = 2000; // No infinite loops
+      let x = Math.ceil(Math.random() * canvas.width);
+      let y = Math.ceil(Math.random() * canvas.height);
+      let dx = Math.ceil(Math.random() * 10 - 5);
+      let dy = Math.ceil(Math.random() * 10 - 5);
+      let radius = 20;
+      const animate = () => {
+        // ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        x += dx;
+        y += dy;
+
+        if (x < radius) {
+          x = radius + 1;
+          dx *= -1;
+        } else if (x > canvas.width - radius) {
+          x = canvas.width - radius - 1;
+          dx *= -1;
+        }
+        if (y < radius) {
+          y = radius + 1;
+          dy *= -1;
+        } else if (y > canvas.height - radius) {
+          y = canvas.height - radius - 1;
+          dy *= -1;
+        }
+
+        ctx.fillStyle = 'hsl(' + killer + ', 100%, 50%)';
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+
+        if (killer > 0) {
+          requestAnimationFrame(animate);
+        }
+
+        killer--;
+        document.querySelector('#counter').innerHTML = `${killer}<br/>x: ${x.toFixed(2)}<br/>dx: ${dx.toFixed(2)}<br/>y: ${y.toFixed(2)}<br/>dy: ${dy.toFixed(2)}`;
+      };
+      animate();
+
+      const btn = document.querySelector('#stahp');
+
+      btn.addEventListener('click', () => {
+        killer = 2000;
+        x = Math.random() * canvas.width;
+        y = Math.random() * canvas.height;
+        dx = Math.random() * 10 - 5;
+        dy = Math.random() * 10 - 5;
+      });
+
+      const b = document.querySelector('body');
+
+      b.addEventListener('keydown', (e) => {
+        if (e.key === "ArrowRight") { dx = 3; }
+        if (e.key === "ArrowLeft") { dx = -3; }
+        if (e.key === "ArrowUp") { dy = -3; }
+        if (e.key === "ArrowDown") { dy = 3; }
+      });
+      b.addEventListener('onkeyup', () => {
+        dx = 2, dy = 2;
+      });
+    </script>
+  </body>
+
 </html>
