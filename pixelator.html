@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Joel Peltonen">
     <title>Pixelator</title>
+
     <style>
       * {
         margin: 0;
@@ -16,56 +17,34 @@
       body {
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        width: 100vw;
-        height: 100vh;
       }
 
       #controls {
         display: flex;
         flex-direction: column;
-        justify-self: center;
-        text-align: right;
-        background-color: whitesmoke;
       }
 
-      .input-group {
-        display: flex;
-        align-items: center;
-        margin: .5em;
+      #imageFile {
+        width: 20em;
       }
 
-      label {
-        width: 10em;
-        margin-right: .5em;
-      }
-
-      #graphics {
-        display: flex;
-        width: 100%;
-        justify-content: center;
-        align-items: center;
+      #sourceImage {
+        display: none;
       }
     </style>
   </head>
 
-  <body onload="">
+  <body>
     <div id="controls">
-      <div class="input-group">
-        <label for="imageFile">Image File:</label>
-        <input type="file" name="" id="imageFile">
-      </div>
+      <input type="file" name="" id="imageFile">
       <div class="input-group">
         <label for="multiplierInput">Pixelation Factor:</label>
-        <input type="number" id="multiplierInput" min="0" max="666" value="2" />
+        <input type="number" id="multiplierInput" min="0" max="666" value="2"/>
       </div>
     </div>
-    <div id="graphics">
-      <img id="sourceImage" src="" alt="source image"/>
-      <canvas id="targetCanvas"></canvas>
-    </div>
-    Joel Peltonen 2021
+    <img id="sourceImage" src="Pink-Gonzo.jpg" alt="source image"/>
+    <canvas id="targetCanvas"></canvas>
 
     <script type="text/javascript">
       const initialFilename = 'Pink-Gonzo.jpg';
@@ -84,10 +63,16 @@
 
       // event handlers
 
-      document.body.addEventListener(() => {
+      window.addEventListener('DOMContentLoaded', () => {
+        // 1. put here instead of using body's onload within its html tag
+        // 2. using window.addListener instead of body.addEventListener()
+        //   Reason: Referring to
+        //   https://stackoverflow.com/questions/5082165/add-event-handler-for-body-onload-by-javascript-within-body-part
+        //   some say less compatibility problems though others say it is not w3c conform.
+        //   I did not really check that!
         sourceImage.setAttribute('src', initialFilename);
         multiplierInput.setAttribute('value', pixelationFactor);
-      })
+      }, false)
 
       fileDialog.addEventListener('change', () => {
         readFile();
@@ -120,8 +105,8 @@
         canvas.height = imageHeight;
 
         // draw centered source image
-        const posX = Math.ceil(canvas.width/2 - imageWidth/2);
-        const posY = Math.ceil(canvas.height/2 - imageHeight/2);
+        const posX = Math.ceil(canvas.width / 2 - imageWidth / 2);
+        const posY = Math.ceil(canvas.height / 2 - imageHeight / 2);
         ctx.drawImage(sourceImage, posX, posY, imageWidth, imageHeight);
 
         // read rendered image pixels
@@ -138,17 +123,21 @@
         for (let row = 1; row < imageHeight; row = row + pixelationFactor) {
           for (let col = 1; col < imageWidth; col = col + pixelationFactor) {
             loopkiller--;
-            if (loopkiller < 0) { return alert("killed"); }
+            if (loopkiller < 0) {
+              return alert("killed");
+            }
 
             // get 1st pixel color
             const pixelReference = (row * imageWidth + col) * 4;
-            if (pixelReference === null || typeof pixelReference === "undefined") {return console.log("Invalid pixel reference"); }
+            if (pixelReference === null || typeof pixelReference === "undefined") {
+              return console.log("Invalid pixel reference");
+            }
 
             const color = `rgb(
-                  ${pixelvalues[pixelReference]},
-                  ${pixelvalues[pixelReference+1]},
-                  ${pixelvalues[pixelReference+2]}
-                )`;
+                              ${pixelvalues[pixelReference]},
+                              ${pixelvalues[pixelReference + 1]},
+                              ${pixelvalues[pixelReference + 2]}
+                            )`;
             // +3 would be the alpha channel, which is pointless for us
             // console.log(pixelReference, color);
             // draw "pixel" ball
@@ -166,7 +155,7 @@
         }
         const fr = new FileReader();
         fr.onload = () => {
-          sourceImage.src = fr.result;      // onload fires after reading is complete
+          sourceImage.src = fr.result;     // onload fires after reading is complete
         };
         fr.readAsDataURL(file);             // begin reading
       }
