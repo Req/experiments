@@ -45,7 +45,19 @@
         <h1>SET YOUR VOLUME VERY VERY LOW BEFORE CLICKING "ON"</h1>
         <button id="on">GO</button>
         <button id="off">STOP</button>
+        <button id="wave">NEW WAVE PLS</button>
         <script>
+            let wave = []
+            function makeWave() {
+                wave = []
+                let tick = 0.6 + Math.random()*4
+                // Array of frequencies or "wave"; integers from 0 to 666 and back
+                for (let wavepoint = 000; wavepoint < 666; wavepoint+=tick) wave.push(wavepoint)
+                for (let wavepoint = 666; wavepoint > 000; wavepoint-=tick) wave.push(wavepoint)
+            }
+            document.querySelector("#wave").addEventListener("click", makeWave)
+            makeWave()
+
             let gainNode, interval
             document.querySelector("#on").addEventListener("click", () => {
                 const audioCtx = new AudioContext() // Our speakers
@@ -62,20 +74,15 @@
 
                 oscillator.start(0)
 
-                // Array of frequencies or "wave"; integers from 0 to 666 and back
-                const wave = []
-                for (let wavepoint = 000; ++wavepoint < 666;) wave.push(wavepoint)
-                for (let wavepoint = 666; --wavepoint;) wave.push(wavepoint)
-
-                let index = 0
+                let index = 99999999999999
                 // The oscillator plays a constant frequency for X milliseconds
                 // The playNextFrequency controls the frequencey based on "wave" array
                 // So the speed at which we go through the wave is the delay of setInterval
                 function playNextFrequency() {
                     // index = which frequency of the wave is playing
-                    index = index > wave.length - 1 ? 0 : index + 1
+                    index = index >= wave.length - 1 ? 0 : index + 1
 
-                    console.log("Playing frequency index " + index + " value 0 " + wave[index])
+                    console.log("Playing frequency " + wave[index])
                     oscillator.frequency.value = wave[index]
                 }
 
