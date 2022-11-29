@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Beep boop</title>
+        <style>
+            body {
+              background: #222;
+            }
+            #wrapper {
+              border-radius: 5px;
+              padding: 0.5em;
+              background: #f0f0f0;
+            }
+            iframe {
+              border-radius: 5px;
+              width: 100%;
+              height: 60vh;
+            }
+            nav {
+              padding: 1em;
+              display: flex;
+              gap: 1em;
+              flex-wrap: wrap;
+              flex-basis: 15em;
+            }
+            nav > button {
+              background-color: #f0f0f0;
+              border: 1px solid;
+              border-radius: 5px;
+              flex-grow: 1;
+            }
+            nav > button.clicked {
+              background:linear-gradient(to bottom right, hotpink, lightblue);
+              border-style: double;
+              border-color: hotpink;
+            }
+          </style>
+    </head>
+
+    <body>
+        <h1>SET YOUR VOLUME VERY VERY LOW BEFORE CLICKING "ON"</h1>
+        <button id="on">GO</button>
+        <button id="off">STOP</button>
+        <script>
+            let gainNode, interval
+            document.querySelector("#on").addEventListener("click", () => {
+                const audioCtx = new AudioContext() // Our speakers
+                const oscillator = audioCtx.createOscillator() // Controls frequency
+                gainNode = audioCtx.createGain() // Controls volume
+
+                gainNode.connect(audioCtx.destination) // connect gain node to speakers
+                oscillator.connect(gainNode) // connect oscillator to gain
+
+                // ☠🕱☠ DANGER! ☠🕱☠
+                // BE CAREFUL WITH VOLUME!
+                gainNode.gain.value = 0.02 // 💀
+                // SERIOUSLY!
+
+                oscillator.start(0)
+
+                // Array of frequencies or "wave"; integers from 0 to 666 and back
+                const wave = []
+                for (let wavepoint = 000; ++wavepoint < 666;) wave.push(wavepoint)
+                for (let wavepoint = 666; --wavepoint;) wave.push(wavepoint)
+
+                let index = 0
+                // The oscillator plays a constant frequency for X milliseconds
+                // The playNextFrequency controls the frequencey based on "wave" array
+                // So the speed at which we go through the wave is the delay of setInterval
+                function playNextFrequency() {
+                    // index = which frequency of the wave is playing
+                    index = index > wave.length - 1 ? 0 : index + 1
+
+                    console.log("Playing frequency index " + index + " value 0 " + wave[index])
+                    oscillator.frequency.value = wave[index]
+                }
+
+                interval = setInterval(playNextFrequency, 1)
+            })
+            document.querySelector("#off").addEventListener("click", () => {
+                gainNode.gain.value = 0
+                clearInterval(interval)
+            })
+        </script>
+    </body>
+
+</html>
