@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weewoo</title>
+  </head>
+
+  <body>
+    <h1>SET YOUR VOLUME VERY VERY LOW BEFORE CLICKING "ON"</h1>
+    <button id="on">GO</button>
+    <button id="off">STOP</button>
+    <script>
+      function makeWave(audioContext) {
+        const floats = []
+        for (let i = 44000; i--;) floats.push(Math.random() * 2 - 1)
+        console.log("New waveform thing", floats)
+
+        const sineTerms = new Float32Array(floats)
+        const cosineTerms = new Float32Array(sineTerms.length)
+        const customWaveform = audioContext.createPeriodicWave(cosineTerms, sineTerms)
+        return customWaveform
+      }
+
+      let audioCtx, oscillator, gain, started = false
+      document.querySelector("#on").addEventListener("click", () => {
+        // Initialize only once
+        if (!gain) {
+          audioCtx = new AudioContext() // Controls speakers
+          gain = audioCtx.createGain() // Controls volume
+          oscillator = audioCtx.createOscillator() // Controls frequency
+
+          gain.connect(audioCtx.destination) // connect gain node to speakers
+
+          oscillator.connect(gain) // connect oscillator to gain
+          oscillator.start()
+        }
+
+        const customWaveform = makeWave(audioCtx)
+        oscillator.setPeriodicWave(customWaveform)
+        gain.gain.value = 0.02 // ☠🕱☠ DANGER! BE CAREFUL WITH VOLUME! ☠🕱☠
+      })
+
+      document.querySelector("#off").addEventListener("click", () => {
+        gain.gain.value = 0
+      })
+    </script>
+  </body>
+
+</html>
