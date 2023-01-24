@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beep boop</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      button {
+        padding: 1em;
+        width: 20em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>SET YOUR VOLUME VERY VERY LOW BEFORE CLICKING "ON"</h1>
+    <div>Freq <input type="range" id="freq" min="20" max="20000" value="200"></div>
+    <div>Gain <input type="range" id="gain" min="1" max="100" value="1"></div>
+    <div id="radios">
+      <input type="radio" data-type="sine" checked>sine
+      <input type="radio" data-type="square">square
+      <input type="radio" data-type="sawtooth">sawtooth
+      <input type="radio" data-type="triangle">triangle
+      <input type="radio" data-type="custom">custom
+    </div>
+    <button id="on">GO</button>
+
+
+    <script>
+      class VoiceEmitter {
+        constructor(){
+          this.started = false
+          this.play = false
+          this.gain = 0
+          
+          this.audioCtx = new AudioContext()
+          this.oscillator = this.audioCtx.createOscillator()
+          this.gainNode = this.audioCtx.createGain()
+          
+          this.gainNode.connect(this.audioCtx.destination)
+          this.oscillator.connect(this.gainNode)
+          
+          this.oscillator.frequency.value = 200 // default freq
+          this.oscillator.type = "sine" // default wave type
+          this.gainNode.value = 0  // default vol
+        }
+
+        setFreq(x) { this.oscillator.frequency.value = x }
+        setType(x) { this.oscillator.type = x }
+        setGain(x) {
+          this.gain = x/100;
+          console.log(x, this.gain)
+          if (this.play) {
+            this.gainNode.value = this.gain
+          }
+        }
+
+        togglePlay() {
+          console.log("Toggleplay")
+          if (!this.started) {
+            console.log("Initial")
+            this.oscillator.start(0)
+            this.started = true
+          }
+
+          this.play = !this.play
+          if (this.play) {
+            console.log("playing")
+            this.gainNode.value = this.gain
+          } else {
+            console.log("not playing")
+            this.gainNode.value = 0
+          }
+        }
+      }
+
+      const out = new VoiceEmitter()
+      window.out = out
+
+      const freqE = document.getElementById("freq")
+      const gainE = document.getElementById("gain")
+      const toggleE = document.getElementById("on")
+      const radios = document.getElementById("radios")
+
+      freqE.addEventListener("change", e => out.setFreq(Number(e.target.value)))
+      gainE.addEventListener("change", e => out.setGain(Number(e.target.value)))
+      toggleE.addEventListener("click", e => out.togglePlay())
+      radios.addEventListener("change", e => out.setType(e.target.dataset.type))
+    </script>
+  </body>
+
+</html>
