@@ -15,19 +15,22 @@
         padding: 1em;
         width: 20em;
       }
+
+      [type="range"] { width: 80vw; }
+      div, body { padding: 1em; }
     </style>
   </head>
 
   <body>
     <h1>SET YOUR VOLUME VERY VERY LOW BEFORE CLICKING "ON"</h1>
-    <div>Freq <input type="range" id="freq" min="20" max="20000" value="200"></div>
+    <div>Freq <input type="range" id="freq" min="1" max="18000" value="200"></div>
     <div>Gain <input type="range" id="gain" min="1" max="100" value="1"></div>
     <div id="radios">
-      <input type="radio" data-type="sine" checked>sine
-      <input type="radio" data-type="square">square
-      <input type="radio" data-type="sawtooth">sawtooth
-      <input type="radio" data-type="triangle">triangle
-      <input type="radio" data-type="custom">custom
+      <input type="radio" name="type" data-type="sine" checked>sine
+      <input type="radio" name="type" data-type="square">square
+      <input type="radio" name="type" data-type="sawtooth">sawtooth
+      <input type="radio" name="type" data-type="triangle">triangle
+      <input type="radio" name="type" data-type="custom">custom
     </div>
     <button id="on">GO</button>
 
@@ -57,7 +60,7 @@
           this.gain = x/100;
           console.log(x, this.gain)
           if (this.play) {
-            this.gainNode.value = this.gain
+            this.gainNode.gain.value = this.gain
           }
         }
 
@@ -72,10 +75,10 @@
           this.play = !this.play
           if (this.play) {
             console.log("playing")
-            this.gainNode.value = this.gain
+            this.gainNode.gain.value = this.gain
           } else {
             console.log("not playing")
-            this.gainNode.value = 0
+            this.gainNode.gain.value = 0
           }
         }
       }
