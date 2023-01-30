@@ -1,9 +1,9 @@
 # Code experiments
 
-# Joels task
+## Joels task
 
-- TODO
+    - TODO
 
-# Markus task
+## Markus task
 
-- EVEN MORE AWESOME code :D
+  - EVEN MORE AWESOME code :D
