@@ -1,9 +1,7 @@
 # Code experiments
 
-## Joels task
-
+- Joel
     - I am a code code code code code
 
-## Markus task
-
+- Markus
     - EVEN MORE AWESOME code :D
