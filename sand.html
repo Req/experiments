@@ -45,7 +45,7 @@
         <canvas id="target"></canvas>
 
         <div id="wrapper">
-            <button id="stahp">That one button</button>
+            <button id="stahp">Redo</button>
             <button id="counter"></button>
         </div>
 
@@ -63,30 +63,30 @@
             let centerY = Math.ceil(canvas.height / 2)
             let killer = 0
 
-            const gridWidth = 130
-            const gridHeight = 130
+            const gridWidth = canvas.width / 5
+            const gridHeight = canvas.height / 5
             // 2d array of cells
             const grid = []
-            for (let i = 0; i < gridWidth; i++) {
-                grid[i] = []
-                for (let j = 0; j < gridHeight; j++) {
-                    if (Math.random() < 0.05) {
-                        grid[i][j] = 1
-                    } else {
-                        grid[i][j] = 0
+
+            function initGrid() {
+                for (let i = 0; i < gridWidth; i++) {
+                    grid[i] = []
+                    for (let j = 0; j < gridHeight; j++) {
+                        if (Math.random() < 0.02) {
+                            grid[i][j] = 1
+                        } else {
+                            grid[i][j] = 0
+                        }
                     }
-                    // if (j==40) {
-                        // grid[i][j] = 1
-                    // } else {
-                        // grid[i][j] = 0
-                    // }
                 }
             }
+            initGrid()
+
             const size = 5
 
             function handleCellLife(grid, i, j) {
                 let cell = grid[i][j]
-                if (!cell) {
+                if (!cell || cell == 2) {
                     return false
                 }
 
@@ -95,22 +95,24 @@
                     return false
                 }
 
+                // Prioritise falling directly down
+                // Randomizing this would create "wind"
                 if (!below) {
-                    // fall
-                    grid[i][j + 1] = 1
+                    grid[i][j + 1] = 2
                     grid[i][j] = 0
                     return true
                 }
 
+                // Randomize left or right
                 if (Math.random() < 0.5) {
                     if (i !== 0) {
                         let belowLeft = grid[i - 1][j + 1]
                         if (belowLeft === undefined) {
-                            return
+                            return false
                         }
                         if (!belowLeft) {
                             // fall left
-                            grid[i - 1][j + 1] = 1
+                            grid[i - 1][j + 1] = 2
                             grid[i][j] = 0
                             return true
                         }
@@ -119,11 +121,11 @@
                     if (grid[i + 1]) {
                         let belowRight = grid[i + 1][j + 1]
                         if (belowRight === undefined) {
-                            return
+                            return false
                         }
                         if (!belowRight) {
                             // fall right
-                            grid[i + 1][j + 1] = 1
+                            grid[i + 1][j + 1] = 2
                             grid[i][j] = 0
                             return true
                         }
@@ -132,11 +134,11 @@
                   if (grid[i + 1]) {
                         let belowRight = grid[i + 1][j + 1]
                         if (belowRight === undefined) {
-                            return
+                            return false
                         }
                         if (!belowRight) {
                             // fall right
-                            grid[i + 1][j + 1] = 1
+                            grid[i + 1][j + 1] = 2
                             grid[i][j] = 0
                             return true
                         }
@@ -144,51 +146,53 @@
                     if (i !== 0) {
                         let belowLeft = grid[i - 1][j + 1]
                         if (belowLeft === undefined) {
-                            return
+                            return false
                         }
                         if (!belowLeft) {
                             // fall left
-                            grid[i - 1][j + 1] = 1
+                            grid[i - 1][j + 1] = 2
                             grid[i][j] = 0
                             return true
                         }
                     }
                 }
             }
-
+            let timer=0
             const animate = () => {
-                if (++killer > 31337) {
+                if (++killer > 1337) {
                     return
                 }
                 ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+                // Draw and recalculate grid
                 for (let i = 0; i < gridWidth; i++) {
                     for (let j = 0; j < gridHeight; j++) {
-                        if (grid[i][j] === 1) {
+                        if (grid[i][j] > 0) {
                             ctx.fillStyle = "white"
                         } else {
                             ctx.fillStyle = "black"
+                            let n = i>10&&i<20 ? 0.001 : 0.0001
+                            if (Math.random() < n) {
+                                grid[i][j] = 1
+                            }
                         }
-                        if (handleCellLife(grid, i, j)) {
-                            break
+                        ctx.fillRect(i * size, j * size, size, size)
+                        handleCellLife(grid, i, j)
+                    }
+                }
+
+                // Reset all falling cells
+                for (let i = 0; i < gridWidth; i++) {
+                    for (let j = 0; j < gridHeight; j++) {
+                        if (grid[i][j] === 2) {
+                            grid[i][j] = 1
                         }
                     }
                 }
 
-                for (let i = 0; i < gridWidth; i++) {
-                    for (let j = 0; j < gridHeight; j++) {
-                        if (grid[i][j] === 1) {
-                            ctx.fillStyle = "white"
-                        } else {
-                            ctx.fillStyle = "black"
-                        }
-                        ctx.fillRect(i * size, j * size, size - 1, size - 1)
-                    }
-                }
-
-                setTimeout(() => {
+                timer=setTimeout(() => {
                     requestAnimationFrame(animate)
-                }, 1000 / 10)
+                }, 1000 / 30)
                 document.querySelector("#counter").innerHTML = killer
             }
             animate()
@@ -198,6 +202,8 @@
             let handler
             handler = () => {
                 killer = 0
+                clearTimeout(timer)
+                initGrid()
                 animate()
             }
 
