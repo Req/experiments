@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>SAND</title>
+    </head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        #target {
+            background: black;
+            height: 100vh;
+            width: 100vw;
+            z-index: -1;
+            position: fixed;
+        }
+
+        button {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            box-shadow: 0 0 5px 2px #0f0;
+            color: #0f0;
+            margin: 1em;
+            padding: 0.3em;
+            cursor: pointer;
+        }
+
+        #counter {
+            cursor: all-scroll;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    </style>
+
+    <body>
+        <canvas id="target"></canvas>
+
+        <div id="wrapper">
+            <button id="stahp">That one button</button>
+            <button id="counter"></button>
+        </div>
+
+        <script type="text/javascript">
+            // canvas setup
+            const canvas = document.getElementById("target")
+            const ctx = canvas.getContext("2d")
+            ctx.strokeStyle = "black"
+            // ctx.globalCompositeOperation = 'destination-over';
+
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+
+            let centerX = Math.ceil(canvas.width / 2)
+            let centerY = Math.ceil(canvas.height / 2)
+            let killer = 0
+
+            const gridWidth = 130
+            const gridHeight = 130
+            // 2d array of cells
+            const grid = []
+            for (let i = 0; i < gridWidth; i++) {
+                grid[i] = []
+                for (let j = 0; j < gridHeight; j++) {
+                    if (Math.random() < 0.05) {
+                        grid[i][j] = 1
+                    } else {
+                        grid[i][j] = 0
+                    }
+                    // if (j==40) {
+                        // grid[i][j] = 1
+                    // } else {
+                        // grid[i][j] = 0
+                    // }
+                }
+            }
+            const size = 5
+
+            function handleCellLife(grid, i, j) {
+                let cell = grid[i][j]
+                if (!cell) {
+                    return false
+                }
+
+                let below = grid[i][j + 1]
+                if (below === undefined) {
+                    return false
+                }
+
+                if (!below) {
+                    // fall
+                    grid[i][j + 1] = 1
+                    grid[i][j] = 0
+                    return true
+                }
+
+                if (Math.random() < 0.5) {
+                    if (i !== 0) {
+                        let belowLeft = grid[i - 1][j + 1]
+                        if (belowLeft === undefined) {
+                            return
+                        }
+                        if (!belowLeft) {
+                            // fall left
+                            grid[i - 1][j + 1] = 1
+                            grid[i][j] = 0
+                            return true
+                        }
+                    }
+
+                    if (grid[i + 1]) {
+                        let belowRight = grid[i + 1][j + 1]
+                        if (belowRight === undefined) {
+                            return
+                        }
+                        if (!belowRight) {
+                            // fall right
+                            grid[i + 1][j + 1] = 1
+                            grid[i][j] = 0
+                            return true
+                        }
+                    }
+                } else {
+                  if (grid[i + 1]) {
+                        let belowRight = grid[i + 1][j + 1]
+                        if (belowRight === undefined) {
+                            return
+                        }
+                        if (!belowRight) {
+                            // fall right
+                            grid[i + 1][j + 1] = 1
+                            grid[i][j] = 0
+                            return true
+                        }
+                    }
+                    if (i !== 0) {
+                        let belowLeft = grid[i - 1][j + 1]
+                        if (belowLeft === undefined) {
+                            return
+                        }
+                        if (!belowLeft) {
+                            // fall left
+                            grid[i - 1][j + 1] = 1
+                            grid[i][j] = 0
+                            return true
+                        }
+                    }
+                }
+            }
+
+            const animate = () => {
+                if (++killer > 31337) {
+                    return
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+                for (let i = 0; i < gridWidth; i++) {
+                    for (let j = 0; j < gridHeight; j++) {
+                        if (grid[i][j] === 1) {
+                            ctx.fillStyle = "white"
+                        } else {
+                            ctx.fillStyle = "black"
+                        }
+                        if (handleCellLife(grid, i, j)) {
+                            break
+                        }
+                    }
+                }
+
+                for (let i = 0; i < gridWidth; i++) {
+                    for (let j = 0; j < gridHeight; j++) {
+                        if (grid[i][j] === 1) {
+                            ctx.fillStyle = "white"
+                        } else {
+                            ctx.fillStyle = "black"
+                        }
+                        ctx.fillRect(i * size, j * size, size - 1, size - 1)
+                    }
+                }
+
+                setTimeout(() => {
+                    requestAnimationFrame(animate)
+                }, 1000 / 10)
+                document.querySelector("#counter").innerHTML = killer
+            }
+            animate()
+
+            const btn = document.querySelector("#stahp")
+
+            let handler
+            handler = () => {
+                killer = 0
+                animate()
+            }
+
+            btn.addEventListener("click", handler)
+        </script>
+    </body>
+</html>
