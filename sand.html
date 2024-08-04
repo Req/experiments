@@ -45,7 +45,7 @@
         <canvas id="target"></canvas>
 
         <div id="wrapper">
-            <button id="stahp">Redo</button>
+            <button id="reset">Redo</button>
             <button id="counter"></button>
         </div>
 
@@ -59,21 +59,21 @@
             canvas.width = window.innerWidth
             canvas.height = window.innerHeight
 
-            let centerX = Math.ceil(canvas.width / 2)
-            let centerY = Math.ceil(canvas.height / 2)
-            let killer = 0
+            const centerX = Math.ceil(canvas.width / 2)
+            const centerY = Math.ceil(canvas.height / 2)
 
-            const gridWidth = canvas.width / 5
-            const gridHeight = canvas.height / 5
-            // 2d array of cells
-            const grid = []
+            const size = 5
+            const gridWidth = canvas.width / size
+            const gridHeight = canvas.height / size
+            const grid = [] // 2d array of cells
 
             function initGrid() {
                 for (let i = 0; i < gridWidth; i++) {
                     grid[i] = []
                     for (let j = 0; j < gridHeight; j++) {
                         if (Math.random() < 0.02) {
-                            grid[i][j] = 1
+                            // Random number between 1 and 9 depending on i 
+                            grid[i][j] = j%9 + 1
                         } else {
                             grid[i][j] = 0
                         }
@@ -82,98 +82,61 @@
             }
             initGrid()
 
-            const size = 5
-
             function handleCellLife(grid, i, j) {
-                let cell = grid[i][j]
-                if (!cell || cell == 2) {
-                    return false
-                }
-
-                let below = grid[i][j + 1]
-                if (below === undefined) {
-                    return false
-                }
-
-                // Prioritise falling directly down
-                // Randomizing this would create "wind"
-                if (!below) {
-                    grid[i][j + 1] = 2
-                    grid[i][j] = 0
-                    return true
-                }
-
-                // Randomize left or right
-                if (Math.random() < 0.5) {
-                    if (i !== 0) {
-                        let belowLeft = grid[i - 1][j + 1]
-                        if (belowLeft === undefined) {
-                            return false
-                        }
-                        if (!belowLeft) {
-                            // fall left
-                            grid[i - 1][j + 1] = 2
-                            grid[i][j] = 0
-                            return true
-                        }
+                function fallTo(colTo, rowTo, colFrom, rowFrom) {
+                    if (grid[colTo] && grid[colTo][rowTo] === 0) {
+                        grid[colTo][rowTo] = grid[i][j] + 10;
+                        grid[i][j] = 0;
+                        return true;
                     }
+                    return false;
+                }
 
-                    if (grid[i + 1]) {
-                        let belowRight = grid[i + 1][j + 1]
-                        if (belowRight === undefined) {
-                            return false
-                        }
-                        if (!belowRight) {
-                            // fall right
-                            grid[i + 1][j + 1] = 2
-                            grid[i][j] = 0
-                            return true
-                        }
+                let cell = grid[i][j];
+                if (!cell || cell > 10) {
+                    return false;
+                }
+
+                let below = grid[i][j + 1];
+                if (below === undefined) {
+                    return false;
+                }
+
+                if (!below) {
+                    return fallTo(i, j + 1);
+                }
+
+                if (Math.random() < 0.5) {
+                    if (fallTo(i - 1, j + 1) || fallTo(i + 1, j + 1)) {
+                        return true;
                     }
                 } else {
-                  if (grid[i + 1]) {
-                        let belowRight = grid[i + 1][j + 1]
-                        if (belowRight === undefined) {
-                            return false
-                        }
-                        if (!belowRight) {
-                            // fall right
-                            grid[i + 1][j + 1] = 2
-                            grid[i][j] = 0
-                            return true
-                        }
-                    }
-                    if (i !== 0) {
-                        let belowLeft = grid[i - 1][j + 1]
-                        if (belowLeft === undefined) {
-                            return false
-                        }
-                        if (!belowLeft) {
-                            // fall left
-                            grid[i - 1][j + 1] = 2
-                            grid[i][j] = 0
-                            return true
-                        }
+                    if (fallTo(i + 1, j + 1) || fallTo(i - 1, j + 1)) {
+                        return true;
                     }
                 }
+
+                return false;
             }
-            let timer=0
+
+            let timer = 0
+            let killer = 0
             const animate = () => {
-                if (++killer > 1337) {
-                    return
-                }
+                if (++killer > 31337) { return }
                 ctx.clearRect(0, 0, canvas.width, canvas.height)
 
                 // Draw and recalculate grid
                 for (let i = 0; i < gridWidth; i++) {
                     for (let j = 0; j < gridHeight; j++) {
                         if (grid[i][j] > 0) {
-                            ctx.fillStyle = "white"
+                            ctx.fillStyle = "hsl(" + grid[i][j] * 5 + ", 100%, "+Math.round((60/gridHeight)*j)+"%)"
                         } else {
                             ctx.fillStyle = "black"
-                            let n = i>10&&i<20 ? 0.001 : 0.0001
-                            if (Math.random() < n) {
-                                grid[i][j] = 1
+                            if (j<10) {
+                                let n = i>10&&i<20 ? 0.003 : 0.0003
+                                if (Math.random() < n) {
+                                    grid[i][j] = 1
+                                }
                             }
                         }
                         ctx.fillRect(i * size, j * size, size, size)
@@ -184,30 +147,25 @@
                 // Reset all falling cells
                 for (let i = 0; i < gridWidth; i++) {
                     for (let j = 0; j < gridHeight; j++) {
-                        if (grid[i][j] === 2) {
-                            grid[i][j] = 1
+                        if (grid[i][j] > 10) {
+                            grid[i][j] -= 10
                         }
                     }
                 }
 
-                timer=setTimeout(() => {
+                timer = setTimeout(() => {
                     requestAnimationFrame(animate)
-                }, 1000 / 30)
+                }, 100 / 6) // ~60fps
                 document.querySelector("#counter").innerHTML = killer
             }
             animate()
 
-            const btn = document.querySelector("#stahp")
-
-            let handler
-            handler = () => {
+            document.querySelector("#reset").addEventListener("click", () => {
                 killer = 0
                 clearTimeout(timer)
                 initGrid()
                 animate()
-            }
-
-            btn.addEventListener("click", handler)
+            })
         </script>
     </body>
 </html>

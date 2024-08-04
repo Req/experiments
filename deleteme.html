@@ -1,0 +1,23 @@
+<script>
+
+let grid = []
+
+for (let i = 0; i < 10; i++) {
+    grid[i] = grid[i] || []
+    for (let j = 0; j < 10; j++) {
+        grid[i][j] = 1
+    }
+}
+
+
+console.log(grid)
+
+function test(x) {
+    x[2][2] = 6
+}
+
+test(grid)
+
+console.log(grid)
+
+</script>
