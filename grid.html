@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerg</title>
+    <style>
+      body {
+        background: #000;
+        display: grid;
+        place-items: center;
+        height: 100vh;
+      }
+
+      canvas {
+        height: 400px;
+        width: 400px;
+        box-shadow: #9007 10px 10px 80px, #009a -10px -10px 50px,
+          #009a 0px 0px 500px;
+        border-radius: 0.5em;
+      }
+
+      pre {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 500px;
+        color: #ccc;
+        max-height: 90vh;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <pre>
+Foo
+Bar
+</pre
+    >
+    <script>
+      let pre = document.querySelector("pre");
+      let msgs = [];
+      function log(m) {
+        msgs.unshift(m);
+        pre.innerText = msgs.join("\n");
+        if (msgs.length > 30) {
+          msgs.pop();
+        }
+      }
+
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Define the grid size
+      const rows = 10;
+      const cols = 10;
+      const cellWidth = canvas.width / cols;
+      const cellHeight = canvas.height / rows;
+
+      function grid() {
+        ctx.strokeStyle = "#101";
+
+        // Draw vertical lines98
+        for (let i = 0; i <= cols; i++) {
+          let x = i * cellWidth;
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, canvas.height);
+          ctx.stroke();
+        }
+
+        // Draw horizontal lines
+        for (let i = 0; i <= rows; i++) {
+          let y = i * cellHeight;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvas.width, y);
+          ctx.stroke();
+        }
+      }
+
+      const char = { x: 2, y: 2 };
+      document.addEventListener("keydown", (e) => {
+        log("Key " + e.key)
+        if (e.key === "w") {
+          if (char.y > 1) char.y--;
+        }
+        if (e.key === "a") {
+          if (char.x > 1) char.x--;
+        }
+        if (e.key === "s") {
+          if (char.y < 10) char.y++;
+        }
+        if (e.key === "d") {
+          if (char.x < 10) char.x++;
+        }
+      });
+
+      const halfx = cellWidth / 2;
+      function coordX(x) {
+        return x * cellWidth - halfx;
+      }
+
+      const halfy = cellHeight / 2;
+      function coordY(x) {
+        return x * cellHeight - halfy;
+      }
+
+      function drawChar() {
+        ctx.fillStyle = "#fee";
+        ctx.beginPath();
+        ctx.arc(coordX(char.x), coordY(char.y), 5, 0, Math.PI * 2); // x, y, radius, start angle, end angle
+        ctx.fill(); // Or use ctx.stroke() if you want only the outline
+      }
+
+      function clear() {
+        ctx.fillStyle = "#000";
+        ctx.beginPath();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fill();
+      }
+
+      log("Move with WASD");
+
+      function tick() {
+        clear();
+        drawChar();
+        grid();
+        // requestAnimationFrame()
+        setTimeout(tick, 1000 / 25);
+      }
+
+      tick();
+    </script>
+  </body>
+</html>
