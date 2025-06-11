@@ -85,21 +85,34 @@
   </head>
   <body>
     <nav>
-      <button data-target="game/index.html" class="clicked">Game</button>
-      <button data-target="bounce.html">Bounce</button>
-      <button data-target="flowers.html">Flowers</button>
-      <button data-target="matrix.html">Matrix</button>
-      <button data-target="move.html">Move</button>
-      <button data-target="draw.html">Draw</button>
-      <button data-target="sand.html">Sand</button>
-      <button data-target="starfield.html">Starfield</button>
-      <button data-target="pixelator.html">Pixelator</button>
-      <button data-target="beep.html">Beep boop</button>
-      <button data-target="grid.html">Grid</button>
-      <a href="index-return.html">View transition</a>
+      <button data-xtarget="game/index.html" class="clicked">Game</button>
+      <button data-xtarget="bounce.html">Bounce</button>
+      <button data-xtarget="flowers.html">Flowers</button>
+      <button data-xtarget="matrix.html">Matrix</button>
+      <button data-xtarget="move.html">Move</button>
+      <button data-xtarget="draw.html">Draw</button>
+      <button data-xtarget="sand.html">Sand</button>
+      <button data-xtarget="starfield.html">Starfield</button>
+      <button data-xtarget="pixelator.html">Pixelator</button>
+      <button data-xtarget="beep.html">Beep boop</button>
+      <button data-xtarget="grid.html">Grid</button>
+      View transition
     </nav>
     <div id="wrapper">
-      <iframe src="game/index.html" frameborder="0"></iframe>
+      <p id="timer"></p>
     </div>
+    <script>
+        let timer = 6000; // 6 seconds in milliseconds
+        const timerElement = document.getElementById("timer");
+        setInterval(() => {
+          const seconds = Math.floor(timer / 100);
+          timerElement.textContent = `Redirecting to index.html in ${(seconds/10).toFixed(2)}...`;
+          timer -= 50; // Decrease by 100 milliseconds
+          if (timer <= 0) {
+            clearInterval();
+            window.location.href = "index.html";
+          }
+        }, 50);
+    </script>
   </body>
 </html>
